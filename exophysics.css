@@ -34,7 +34,8 @@ a[href*="//"]:after {
     text-decoration: none;
     display: inline-block; /* seems to be required for text-decoration: none; to work */
 }
-a, a:hover, a:visited { color: #99f; }
+a, a:hover { color: #99f; }
+a:visited { color: #c5c; }
 ol { list-style-type: thai; }
 /*ul { list-style-type: bengali; }*/
 h1 {
