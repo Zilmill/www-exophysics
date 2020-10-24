@@ -1,0 +1,487 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <title>Exophysics</title>
+        <meta charset="utf-8">
+    </head>
+    <!--
+    Dear fellow amateur exophysicist,
+
+    I'm excited to see you embarking with me on our expedition towards new
+    frontiers.  It takes courage to leave the comfort of the physics of your
+    home universe and explore the uncharted worlds of exophysics.
+
+    Along with this letter, you will find a complimentary explorer hat, an
+    exochemistry field manual, and a so-called "HTML file", a human-era magic
+    spell that will serve as your entrance portal.
+
+    This file is self-contained, will run as-is on any modern 2020's web
+    browser, and contains the following parts:
+
+    1. The HTML scaffolding
+    2. The "parameters" object, for tweaking basic settings
+    3. The vertex shader code that describes the laws of physics
+    4. The fragment shader code that specifies the color of each particle
+    5. The JavaScript code that takes care of the uninteresting WebGL plumbing
+
+    My personal advice is to start by tweaking the vertex shader, and get an
+    intuition for what it takes to maximize the beautiful emergent properties.
+
+    A few pointers:
+
+    - Website: https://exophysics.net/
+    - Code: https://github.com/exophysics/exophysics
+    - WebGL2 Tutorial: https://webgl2fundamentals.org/
+    - License: http://www.wtfpl.net/
+
+    Finally, I am legally obliged to inform you of the one law of exophysics:
+    YOU ARE REQUIRED TO SHUT DOWN A SIMULATION IMMEDIATELY IF YOU FIND EVIDENCE
+    OF THE EMERGENCE OF SENTIENT CREATURES CAPABLE OF SUFFERING.
+
+    Your guide,
+    Q.
+    -->
+    <body style="margin: 0; background: black;">
+        <canvas id="canvas" style="display: block; height: 100vh; width: 100vw;"></canvas>
+        <script>
+            var parameters = {
+                particleLimit: 1024, // Keep this in sync with particleLimit in vertex shader!
+                extraUniforms: 1, // Update when you add more uniforms. Keep in sync too.
+                logFPS: true,
+            }
+        </script>
+        <script type="x-shader/x-vertex" id="vertex-shader">
+            #version 300 es
+            precision lowp float;
+            // constants
+            const int extraUniforms = 1;
+            const int particleLimit = min(gl_MaxVertexUniformVectors - extraUniforms, 1024);
+            const float PI = 3.1415926535897932384626433832795;
+
+            // tweakable parameters
+            const float floorGravity = 0.0;
+            const float particleGravity = 0.001;
+            const float flavorAttraction = -0.01;
+            const float numFlavors = 2.0;
+            const float bounceDampeningFactor = 0.99;
+            const float maxV = 0.01;
+            const float pointerRadius = 0.30;
+            const float pointerSlowFactor = 0.0;
+            const float pointerPullFactor = 100.0;
+            const float energyGain = 0.0; // it's warmer at the top, and the particles will grow
+            const float attractionAngle = 0.0 / 360.0 * PI;
+            const mat2 attractionRotationMatrix = mat2(
+                cos(attractionAngle), sin(attractionAngle),
+                -sin(attractionAngle), cos(attractionAngle));
+
+            // data transfer variables
+            uniform vec4 allStates[particleLimit];
+            uniform vec4 userInput; // (x, y, clicking?, paused?), the latter two can be 1.0 or 0.0
+            in vec4 oldState;
+            in vec4 oldV;
+            in int currentIndex;
+            in float random;
+            out vec4 state; // attributes that other particles know about: (x, y, energy, flavor)
+            out vec4 newV; // internal attributes: (x-velocity, y-velocity, undefined, undefined)
+            out lowp vec4 color;
+
+            float rand(vec2 co) {
+                // https://stackoverflow.com/a/28095165
+                return fract(sin(dot(co.xy, vec2(12.9898, 78.233))) * 43758.5453);
+            }
+
+            void main() {
+                state = oldState;
+                newV = oldV;
+
+                gl_Position.xy = state.xy;
+                gl_Position.zw = vec2(0.0, 1.0);
+                gl_PointSize = state.z * 3.0 + 1.0;
+
+                float flavor = floor(state.w * numFlavors);
+
+                color.a = 1.0;
+                if      (flavor == 0.0) { color.rgb = vec3(1.0, 0.3, 0.0); }
+                else if (flavor == 1.0) { color.rgb = vec3(0.0, 0.7, 1.0); }
+                else if (flavor == 2.0) { color.rgb = vec3(1.0, 1.0, 0.0); }
+                else if (flavor == 3.0) { color.rgb = vec3(1.0, 0.0, 1.0); }
+                else if (flavor == 4.0) { color.rgb = vec3(0.0, 1.0, 1.0); }
+                else                    { color.rgb = vec3(1.0, 1.0, 1.0); }
+
+                // Has the user paused the simulation?
+                if (userInput.w == 1.0) { return; }
+
+                // Initialization, decay, and respawning of particles:
+                if (state.z < 0.001) {
+                    newV.x = (rand(vec2(random)) * 2.0 - 1.0) * maxV;
+                    newV.y = (rand(vec2(random + 1.0)) * 2.0 - 1.0) * maxV;
+                    newV.p = (rand(vec2(random + 2.0)) * 2.0 - 1.0) * maxV;
+                    newV.q = (rand(vec2(random + 3.0)) * 2.0 - 1.0) * maxV;
+                    state.x = rand(vec2(random + 4.0)) * 2.0 - 1.0;
+                    state.y = rand(vec2(random + 5.0)) * 2.0 - 1.0;
+                    state.z = rand(vec2(random + 6.0)) * 0.5 + 0.5;
+                    state.w = rand(vec2(random + 7.0));
+                }
+
+                // Movement
+                state.xy += oldV.xy;
+                state.xy += oldV.pq;
+
+                // Gain/loss of energy
+                state.z += state.y * energyGain;
+
+                // Attraction of particles towards each other
+                if (particleGravity != 0.0) {
+                    vec4 particle_pos;
+                    vec4 center_of_mass;
+                    center_of_mass = vec4(0.0, 0.0, 0.0, 0.0);
+                    for (int i = 0; i < particleLimit; i++) {
+                        particle_pos = allStates[i];
+                        center_of_mass += particle_pos;
+                    }
+                    center_of_mass /= float(particleLimit);
+                    vec4 dist = allStates[currentIndex] - center_of_mass;
+                    dist.xy = (attractionRotationMatrix * dist.xy);
+                    newV.pq -= dist.xy * particleGravity;
+                }
+
+                if (flavorAttraction != 0.0) {
+                    float repulsion = 1.0 * pow(numFlavors - 1.0, 2.0);
+                    vec4 otherState;
+                    float otherFlavor;
+                    vec2 dist;
+                    for (int i = 0; i < particleLimit; i++) {
+                        if (i == currentIndex) { continue; }
+                        otherState = allStates[i];
+                        otherFlavor = floor(otherState.w * numFlavors);
+                        dist = otherState.xy - state.xy;
+                        dist.xy = (attractionRotationMatrix * dist.xy);
+                        newV.xy += dist.xy
+                            / pow(length(dist.xy), 3.0)
+                            * flavorAttraction
+                            * (flavor == otherFlavor ? repulsion : -1.0);
+                    }
+                }
+
+                // Movement towards the mouse pointer
+                if (userInput.b == 1.0) {
+                    float dist = distance(state.xy, userInput.xy);
+                    if (dist <= pointerRadius) {
+                        vec2 accel;
+                        dist /= pointerRadius;
+                        if (pointerSlowFactor != 0.0) {
+                            newV.x *= 1.0 - pointerSlowFactor * (1.0 - dist);
+                            newV.y *= 1.0 - pointerSlowFactor * (1.0 - dist);
+                        }
+                        if (pointerPullFactor != 0.0) {
+                            accel = (userInput.xy - state.xy) * dist * pointerPullFactor;
+                            newV.xy += accel;
+                            newV.pq += accel;
+                        }
+                    }
+                }
+
+                // Movement towards the bottom
+                if (floorGravity != 0.0) {
+                    newV.y -= floorGravity;
+                }
+
+                // Limit position
+                if (state.x < -1.0) {
+                    state.x = -1.0;
+                    newV.x *= -bounceDampeningFactor;
+                    newV.p *= -bounceDampeningFactor;
+                }
+                else if (state.x > 1.0) {
+                    state.x = 1.0;
+                    newV.x *= -bounceDampeningFactor;
+                    newV.p *= -bounceDampeningFactor;
+                }
+                if (state.y < -1.0) {
+                    state.y = -1.0;
+                    newV.y *= -bounceDampeningFactor;
+                    newV.q *= -bounceDampeningFactor;
+                }
+                else if (state.y > 1.0) {
+                    state.y = 1.0;
+                    newV.y *= -bounceDampeningFactor;
+                    newV.q *= -bounceDampeningFactor;
+                }
+
+                // Limit velocity
+                if (length(newV.xy) > maxV) {
+                    newV.xy *= vec2(maxV / length(newV.xy));
+                }
+                if (length(newV.pq) > maxV) {
+                    newV.pq *= vec2(maxV / length(newV.pq));
+                }
+
+                // Limit energy
+                if (state.z > 1.0) { state.z = 1.0; }
+            }
+        </script>
+        <script type="x-shader/x-fragment" id="fragment-shader">
+            #version 300 es
+            precision lowp float;
+            in vec4 color;
+            out vec4 outColor;
+            // The color is computed by vertex shader to avoid copying uniforms twice.
+            void main() { outColor = color; }
+        </script>
+        <script type="application/javascript" id="boilerplate">
+            "use strict";
+
+            main(parameters);
+
+            function main(param) {
+                const canvas = document.querySelector('#canvas');
+                const gl = canvas.getContext('webgl2');
+                if (!gl) {
+                    alert('Unable to initialize WebGL. Your browser or machine may not support it.');
+                    return;
+                }
+
+                param.particleLimit = Math.min(param.particleLimit,
+                    gl.getParameter(gl.MAX_VERTEX_UNIFORM_VECTORS) - param.extraUniforms);
+                param.fpsCounter = 0;
+                param.fpsTime = 0;
+                param.pointerX = 0;
+                param.pointerY = 0;
+                param.pointerDown = false;
+                param.paused = false;
+
+                initUI(gl, param);
+                const shaderInfo = initShaders(gl);
+                const buffers = initBuffers(gl, shaderInfo, param);
+                drawScene(gl, shaderInfo, buffers, param);
+            }
+
+            function initUI(gl, param) {
+                gl.canvas.addEventListener('pointermove', function(e) {
+                    const rect = canvas.getBoundingClientRect();
+                    param.pointerX = (e.clientX - rect.left) / gl.canvas.clientWidth * 2 - 1;
+                    param.pointerY = ((e.clientY - rect.top) / gl.canvas.clientHeight * 2 - 1) * -1;
+                });
+                gl.canvas.addEventListener('pointerdown', function(e) {
+                    const rect = canvas.getBoundingClientRect();
+                    param.pointerX = (e.clientX - rect.left) / gl.canvas.clientWidth * 2 - 1;
+                    param.pointerY = ((e.clientY - rect.top) / gl.canvas.clientHeight * 2 - 1) * -1;
+                    if (e.button == 0) {
+                        param.pointerDown = true;
+                        gl.canvas.setPointerCapture(e.pointerId);
+                    }
+                });
+                gl.canvas.addEventListener('pointerup', function(e) {
+                    const rect = canvas.getBoundingClientRect();
+                    param.pointerX = (e.clientX - rect.left) / gl.canvas.clientWidth * 2 - 1;
+                    param.pointerY = ((e.clientY - rect.top) / gl.canvas.clientHeight * 2 - 1) * -1;
+                    if (e.button == 0) {
+                        param.pointerDown = false;
+                        gl.canvas.releasePointerCapture(e.pointerId);
+                    }
+                });
+                window.addEventListener('keypress', function(e) {
+                    if (e.key === " ") {
+                        param.paused ^= true;
+                    }
+                });
+            }
+
+            function initShaders(gl) {
+                const vertexSource = document.getElementById("vertex-shader").text
+                const fragmentSource = document.getElementById("fragment-shader").text
+                const feedbackVars = ['state', 'newV'];
+                const shaderProgram = createProgram(gl, vertexSource, fragmentSource, feedbackVars);
+
+                const shaderInfo = {
+                    program: shaderProgram,
+                    attribs: {
+                        oldState: gl.getAttribLocation(shaderProgram, 'oldState'),
+                        oldV: gl.getAttribLocation(shaderProgram, 'oldV'),
+                        currentIndex: gl.getAttribLocation(shaderProgram, 'currentIndex'),
+                        random: gl.getAttribLocation(shaderProgram, 'random'),
+                    },
+                    uniforms: {
+                        allStates: gl.getUniformLocation(shaderProgram, 'allStates'),
+                        userInput: gl.getUniformLocation(shaderProgram, 'userInput'),
+                    },
+                };
+                gl.useProgram(shaderProgram);
+                return shaderInfo;
+            }
+
+            function createShader(gl, type, source) {
+                const shader = gl.createShader(type);
+                gl.shaderSource(shader, source);
+                gl.compileShader(shader);
+                if (!gl.getShaderParameter(shader, gl.COMPILE_STATUS)) {
+                    alert('An error occurred compiling the shaders: ' + gl.getShaderInfoLog(shader));
+                    gl.deleteShader(shader);
+                    return null;
+                }
+                return shader;
+            }
+
+            function createProgram(gl, vertexSource, fragmentSource, feedbackVars) {
+                const vertexShader = createShader(gl, gl.VERTEX_SHADER, vertexSource.trim());
+                const fragmentShader = createShader(gl, gl.FRAGMENT_SHADER, fragmentSource.trim());
+                const shaderProgram = gl.createProgram();
+                gl.attachShader(shaderProgram, vertexShader);
+                gl.attachShader(shaderProgram, fragmentShader);
+                gl.transformFeedbackVaryings(shaderProgram, feedbackVars, gl.SEPARATE_ATTRIBS);
+                gl.linkProgram(shaderProgram);
+
+                if (!gl.getProgramParameter(shaderProgram, gl.LINK_STATUS)) {
+                    alert('Unable to initialize the shader program: ' + gl.getProgramInfoLog(shaderProgram));
+                    return null;
+                }
+                return shaderProgram;
+            }
+
+            function initBuffers(gl, shaderInfo, param) {
+                const vao = gl.createVertexArray();
+                gl.bindVertexArray(vao);
+
+                // initiate with random positions
+                const oldStateBuffer = gl.createBuffer();
+
+                var size = 4;
+                var type = gl.FLOAT;
+                var normalize = false;
+                var stride = 0;
+                var offset = 0;
+                gl.bindBuffer(gl.ARRAY_BUFFER, oldStateBuffer);
+                gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(param.particleLimit * size), gl.DYNAMIC_DRAW);
+                gl.vertexAttribPointer(shaderInfo.attribs.oldState,
+                    size, type, normalize, stride, offset);
+                gl.enableVertexAttribArray(shaderInfo.attribs.oldState);
+
+                // initiate with random velocity
+                const oldVBuffer = gl.createBuffer();
+
+                gl.bindBuffer(gl.ARRAY_BUFFER, oldVBuffer);
+                gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(param.particleLimit * size), gl.DYNAMIC_DRAW);
+                gl.vertexAttribPointer(shaderInfo.attribs.oldV, 4, gl.FLOAT, false, 0, 0);
+                gl.enableVertexAttribArray(shaderInfo.attribs.oldV);
+
+                // currentIndex is simply [0, 1, 2, ...]
+                const currentIndex = [...Array(param.particleLimit)].map((val,key) => key)
+                const currentIndexBuffer = gl.createBuffer();
+                gl.bindBuffer(gl.ARRAY_BUFFER, currentIndexBuffer);
+                gl.bufferData(gl.ARRAY_BUFFER, new Int32Array(currentIndex), gl.STATIC_DRAW);
+
+                gl.vertexAttribIPointer(shaderInfo.attribs.currentIndex, 1, gl.INT, false, 0, 0);
+                gl.enableVertexAttribArray(shaderInfo.attribs.currentIndex);
+
+                // random variable, to be used for e.g. seeding a random function
+                const randomBuffer = gl.createBuffer();
+                gl.bindBuffer(gl.ARRAY_BUFFER, randomBuffer);
+                gl.vertexAttribPointer(shaderInfo.attribs.random, 1, gl.FLOAT, false, 0, 0);
+                gl.enableVertexAttribArray(shaderInfo.attribs.random);
+
+                // buffers for reading data from the shader through transform feedback buffers
+                var stateBuffer = gl.createBuffer();
+                var newVBuffer = gl.createBuffer();
+
+                return {
+                    vao: vao,
+                    oldState: oldStateBuffer,
+                    oldV: oldVBuffer,
+                    state: stateBuffer,
+                    newV: newVBuffer,
+                    currentIndex: currentIndexBuffer,
+                    random: randomBuffer,
+                };
+            }
+
+            function drawScene(gl, shaderInfo, buffers, param) {
+                // this function will call itself in a loop forever.
+                gl.clearColor(0.0, 0.0, 0.0, 1.0);
+                gl.clear(gl.COLOR_BUFFER_BIT);
+                if (canvas.width !== canvas.clientWidth || canvas.height !== canvas.clientHeight) {
+                    canvas.width = canvas.clientWidth;
+                    canvas.height = canvas.clientHeight;
+                    gl.viewport(0, 0, gl.canvas.width, gl.canvas.height);
+                }
+
+                // update the "userInput" uniform
+                var button_pressed = (param.pointerDown ? 1.0 : 0.0);
+                var paused = (param.paused ? 1.0 : 0.0);
+                gl.uniform4fv(shaderInfo.uniforms.userInput, new Float32Array(
+                    [param.pointerX, param.pointerY, button_pressed, paused]));
+
+                // Set the random variable
+                var random = [...Array(param.particleLimit)].map(_=>(Math.random()));
+                gl.bindBuffer(gl.ARRAY_BUFFER, buffers.random);
+                gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(random), gl.DYNAMIC_DRAW);
+
+                // Initialize reading of shader output through transform feedback buffers
+                var stateArray = new Float32Array(param.particleLimit * 4);
+                var newVArray = new Float32Array(param.particleLimit * 4);
+
+                const tf = gl.createTransformFeedback();
+                gl.bindTransformFeedback(gl.TRANSFORM_FEEDBACK, tf);
+
+                gl.bindBuffer(gl.TRANSFORM_FEEDBACK_BUFFER, buffers.state);
+                gl.bufferData(gl.TRANSFORM_FEEDBACK_BUFFER, stateArray, gl.STATIC_READ);
+                gl.bindBufferBase(gl.TRANSFORM_FEEDBACK_BUFFER, 0, buffers.state);
+
+                gl.bindBuffer(gl.TRANSFORM_FEEDBACK_BUFFER, buffers.newV);
+                gl.bufferData(gl.TRANSFORM_FEEDBACK_BUFFER, newVArray, gl.STATIC_READ);
+                gl.bindBufferBase(gl.TRANSFORM_FEEDBACK_BUFFER, 1, buffers.newV);
+
+                gl.bindBuffer(gl.TRANSFORM_FEEDBACK_BUFFER, null);
+
+                gl.beginTransformFeedback(gl.POINTS);
+
+                // Draw scene
+                var offset = 0;
+                var vertexCount = param.particleLimit;
+                gl.drawArrays(gl.POINTS, offset, vertexCount);
+
+                // Read shader output
+                gl.endTransformFeedback();
+                gl.bindTransformFeedback(gl.TRANSFORM_FEEDBACK, null);
+
+                // asynchronous callback that waits for the shader to finish running
+                const fence = gl.fenceSync(gl.SYNC_GPU_COMMANDS_COMPLETE, 0);
+                gl.flush();
+                function readShaderOutput(timestamp) {
+                    const status = gl.clientWaitSync(fence, 0, 0);
+                    if (status === gl.CONDITION_SATISFIED || status === gl.ALREADY_SIGNALED) {
+                        gl.deleteSync(fence);
+                        const output = new Float32Array(param.particleLimit * 4);
+
+                        // copy the previous "state" values to the current "oldState"
+                        gl.bindBuffer(gl.ARRAY_BUFFER, buffers.state);
+                        gl.getBufferSubData(gl.ARRAY_BUFFER, 0, output);
+                        gl.bindBuffer(gl.ARRAY_BUFFER, buffers.oldState);
+                        gl.bufferData(gl.ARRAY_BUFFER, output, gl.DYNAMIC_DRAW);
+
+                        // update the "allStates" uniform
+                        gl.uniform4fv(shaderInfo.uniforms.allStates, output);
+
+                        // copy the previous "newV" values to the current "oldV"
+                        gl.bindBuffer(gl.ARRAY_BUFFER, buffers.newV);
+                        gl.getBufferSubData(gl.ARRAY_BUFFER, 0, output);
+                        gl.bindBuffer(gl.ARRAY_BUFFER, buffers.oldV);
+                        gl.bufferData(gl.ARRAY_BUFFER, output, gl.DYNAMIC_DRAW);
+
+                        if (param.logFPS) {
+                            if (timestamp - 1000 > param.fpsTime) {
+                                param.fpsTime = timestamp;
+                                console.log('frames per second: ' + param.fpsCounter);
+                                param.fpsCounter = 0;
+                            }
+                            param.fpsCounter++;
+                        }
+                        drawScene(gl, shaderInfo, buffers, param);
+                    } else {
+                        window.requestAnimationFrame(readShaderOutput);
+                    }
+                }
+                window.requestAnimationFrame(readShaderOutput);
+            }
+        </script>
+    </body>
+</html>
