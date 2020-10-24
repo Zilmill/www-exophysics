@@ -33,12 +33,10 @@
                 physically correct (according to your universe).
             </p>
             <p>
-                Note that exophysics uses a technology called
-                <a href="https://en.wikipedia.org/wiki/WebGL">WebGL2</a>, which
-                requires a modern browser and a modern graphics card to run.
-                Safari tends to have problems, older phones seem to struggle,
-                while older PCs &amp; laptops with a recent Firefox or Chromium
-                seem fine.
+                Note that WebGL2 requires a modern browser and a modern
+                graphics card to run.  Safari tends to have problems, older
+                phones seem to struggle, while older PCs &amp; laptops with a
+                recent Firefox or Chromium seem fine.
             </p>
             <h2>Overview</h2>
             <p>
@@ -125,9 +123,16 @@
                 universe unfolds.
             </p>
             <p>
-                Interesting parts of the vertex shader include the definitions
-                of the physical constants, which in one particular universe
-                looks like this:
+                The vertex shader varies strongly between individual universes.
+                It is therefore recommended to comment it extensively.  There
+                are stories aplenty of adventurers entering a universe, getting
+                entirely lost in a labyrinth of code, and never finding a way
+                back home.
+            </p>
+            <h4>Changing physical constants</h4>
+            <p>
+                One interesting part of the vertex shader is the definitions of
+                the physical constants.  This might look like:
             </p>
             <code>const float floorGravity = 0.0;
 const float particleGravity = 0.0;
@@ -137,9 +142,10 @@ const float bounceDampeningFactor = 0.99;
 const float maxV = 0.01;
 const float maxAccel = 0.01;
 ...</code>
+            <h4>Changing physical laws</h4>
             <p>
-                As well as the laws of physics, for example, the gravitational
-                attraction between particles:
+                The vertex shader also defines the laws of physics, for
+                example, the gravitational attraction between particles:
             </p>
             <code>// Attraction of particles towards each other
 if (particleGravity != 0.0) {
@@ -163,17 +169,11 @@ if (particleGravity != 0.0) {
                 You can start by tweaking the physical constants first and see
                 what happens, but don't be afraid to alter the laws of physics
                 as well.  Be creative, think outside the box, tinker, and don't
-                be afraid to break things.  You can always roll back.  In this
-                expedition, there is no right and wrong, but if you're brave
-                enough, you can get a glimpse of the inifinite possibilities of
-                exophysics.
-            </p>
-            <p>
-                The vertex shader varies strongly between individual universes.
-                It is therefore recommended to comment it extensively.  There
-                are stories aplenty of adventurers entering a universe, getting
-                entirely lost in a labyrinth of code, and never finding a way
-                back home.
+                be afraid to break things.  Law #1 of exophysis ensures that
+                no sentient being is harmed in the process.  In this
+                expedition, there is no right and wrong, and only if you're
+                brave enough, you can get a glimpse of the unexplored,
+                inifinite possibilities of exophysics.
             </p>
             <h3>Fragment Shader</h3>
             <p>
@@ -203,15 +203,48 @@ if (particleGravity != 0.0) {
             <p>
                 The JavaScript code contains functions for:
             </p>
-            <ul>
+            <ol>
                 <li>initializing the WebGL2 state</li>
                 <li>managing user interaction by registering event handlers for e.g. mouse clicks</li>
                 <li>compiling and linking the vertex &amp; fragment shader</li>
                 <li>managing the buffers for sending and receiving variables from/to the vertex shader</li>
                 <li>triggering the drawing of the WebGL image into the <code>&lt;canvas&gt;</code></li>
-            </ul>
+            </ol>
             <p>
-                Unless you want to 
+                Unless you want to change any of the above (for example, pass
+                extra information to the vertex shader), it will not be
+                necessary to touch any JavaScript code.
+            </p>
+            <h4>Adding variables</h4>
+            <p>
+                These would be the steps to pass extra variables to the vertex
+                shader, if you ever need to:
+            </p>
+            <ol>
+                <li>Add an "<code>in</code>" variable to the vertex shader, like "<code>in float coolNumber;</code>"</li>
+                <li>Add the variable to "<code>shaderInfo.attribs</code>" in "<code>initShaders</code>"</li>
+                <li>Add a buffer in the "<code>initBuffers</code>" function</li>
+                <ol>
+                    <li><code>gl.bindBuffer(...);</code></li>
+                    <li><code>gl.bufferData(...);</code></li>
+                    <li><code>gl.vertexAttribPointer(...);</code></li>
+                    <li><code>gl.enableVertexAttribArray(...);</code></li>
+                    <li>Don't forget to add it to the returned object</li>
+                </ol>
+                <li>Set the data that the variable should receive in the "<code>drawScene</code>" function</li>
+                <ol>
+                    <li><code>gl.bindBuffer(...);</code></li>
+                    <li><code>gl.bufferData(...);</code></li>
+                </ol>
+                <li>Now you just need to use the variable.  Error messages may appear if the variable is unused, due to aggressive optimization.</li>
+            </ol>
+            <h4>Adding uniforms</h4>
+            <p>
+                My advice is: <b>DO NOT ADD UNIFORMS</b>, since there's a
+                uniform limit, and exophysics needs as many uniforms as
+                possible for passing information about all particles to the
+                shader through the "<code>allStates</code>" uniform.  See also
+                the section "Particle Limit".
             </p>
             <h2>Particle Limit</h2>
             <p>
