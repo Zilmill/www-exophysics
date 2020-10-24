@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Exophysics Field Manual</title>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="og:title" property="og:title" content="Exophysics">
+        <meta name="description" content='Explore the physics of other universes'>
+        <link rel="stylesheet" href="exophysics.css" type="text/css" />
+        <link rel="shortcut icon" type="image/gif" href="data:image/gif;base64,R0lGODdhBAAEAOMBAFQAzFUAzFgBzV0DzmQG0G4K1IES2osW3ZUZ358e47El6L0q7MUt7dAx8uM59/VA/CwAAAAABAAEAAAEDJAIEJApg6l0nmtLBAA7">
+    </head>
+    <body>
+        <nav>
+            <a href="index.html">Home</a>
+            <a href="exhibition.html">Exhibition</a>
+            <a href="manual.html" class="active">Manual</a>
+            <a href="cookbook.html">Cookbook</a>
+            <a href="https://github.com/exophysics/exophysics">Code</a>
+            <a href="about.html">About</a>
+        </nav>
+        <article>
+            <h1>Exophysics Field Manual</h1>
+            <div id="toc">Table of contents:</div>
+            <h2>Introduction</h2>
+            <p>
+                Exophysics is a particle simulator in
+                <a href="https://en.wikipedia.org/wiki/HTML">HTML</a>
+                + <a href="https://en.wikipedia.org/wiki/JavaScript">JavaScript</a>
+                + <a href="https://en.wikipedia.org/wiki/WebGL">WebGL2</a>
+                along with GLSL Shaders.  It is not physically correct, and
+                that's not the intention.  On the contrary, exophysics invites
+                you to explore the possibilities of universes that are not
+                physically correct (according to your universe).
+            </p>
+            <p>
+                Note that exophysics uses a technology called
+                <a href="https://en.wikipedia.org/wiki/WebGL">WebGL2</a>, which
+                requires a modern browser and a modern graphics card to run.
+                Safari tends to have problems, older phones seem to struggle,
+                while older PCs &amp; laptops with a recent Firefox or Chromium
+                seem fine.
+            </p>
+            <h2>Overview</h2>
+            <p>
+                Let's dive into the
+                <a href="https://github.com/exophysics/exophysics/blob/master/index.html">source code</a>.
+                Technically, there is not "the one" source code of exophysics.
+                Each universe is self-contained in its own HTML file, with no
+                external dependencies.  This is necessary to ensure that it
+                will still work when you get completely lost in the labyrinth
+                of dimensions, outside of space and time, all alone in between
+                the manifold realms of the multiverse, with no WIFI, no access
+                to content delivery networks, and a completely dissolved
+                software ecosystem.
+            </p>
+            <p>
+                As a result, the code of exophysics will naturally diverge.
+                There is still a basic common structure though, consisting of 5
+                parts:
+            </p>
+            <ol>
+                <li>The HTML scaffolding</li>
+                <li>The "parameters" object, for tweaking basic settings</li>
+                <li>The <a href="https://www.khronos.org/opengl/wiki/Vertex_Shader">vertex shader</a> code that describes the laws of physics</li>
+                <li>The <a href="https://www.khronos.org/opengl/wiki/Fragment_Shader">fragment shader</a> code that specifies the color of each particle</li>
+                <li>The JavaScript code that takes care of the uninteresting plumbing</li>
+            </ol>
+            <p>
+                The following chapters will describe each individual part in
+                detail.
+            </p>
+            <h3>HTML</h3>
+            <p>
+                HTML is a human-era "mark-up language" that describes websites
+                through a sequence of magic words and symbols.  E.g. if you
+                write "<code>&lt;title&gt;Exophysics&lt;/title&gt;</code>" in a
+                certain section of the file, it will set the title of the page
+                to "Exophysics".  The magic rune "<code>&lt;script&gt;</code>"
+                allows you to embed fragments in other languages like
+                JavaScript and GLSL within the file.
+            </p>
+            <p>
+                The HTML scaffold can typically be ignored. It serves mainly as
+                a container for the other components, some HTML meta
+                information, as well as a <code>&lt;canvas&gt;</code>, into
+                which WebGL will render the universe.
+            </p>
+            <h3>Parameters</h3>
+            <p>
+                "<code>parameters</code>" is a JavaScript variable that's
+                defined in a separate block, right before the Vertex Shader,
+                for your convenience.  It defines a few basic options of
+                Exophysics like the Particle Limit.
+            </p>
+            <h3>Vertex Shader</h3>
+            <p>
+                The vertex shader is the core of exophysics which defines the
+                laws of physics and determines the unfolding of the universe as
+                time progresses.
+            </p>
+            <p>
+                <a href="https://webgl2fundamentals.org/webgl/lessons/webgl-shaders-and-glsl.html#vertex-shader">Here is a good tutorial on the fundamentals of vertex shaders.</a>
+            </p>
+            <p>
+                The vertex shader is written in the programming language GLSL
+                ("OpenGL Shading Language"), a C-like language which is
+                compiled to something that runs directly on the graphics card.
+                It receives a set of data as the input, and computes the
+                position of a vertex, e.g. a corner of a triangle, or the
+                coordinates of a point.  The strength of vertex shaders is that
+                they run in parallel.  If you want to compute the positions of
+                2000 points, it's run on 2000 (if available) processing units
+                of your graphics card at the same time, making it fast enough
+                for 3D games or a simulation like exophysics.
+            </p>
+            <p>
+                For each particle in the exophysics universe, one vertex shader
+                is run on one processing unit of your GPU with an individual
+                set of input data.  The vertex shader then calculates the next
+                position (and any other state information) of the particle and
+                then makes it available to the JavaScript part through a
+                mechanism called "transform feedback".  The javascript code
+                then feeds back the output as input to the vertex shader when
+                the next frame is drawn, creating an infinite loop in which the
+                universe unfolds.
+            </p>
+            <p>
+                Interesting parts of the vertex shader include the definitions
+                of the physical constants, which in one particular universe
+                looks like this:
+            </p>
+            <code>const float floorGravity = 0.0;
+const float particleGravity = 0.0;
+const float flavorAttraction = -0.05;
+const float numFlavors = 3.0;
+const float bounceDampeningFactor = 0.99;
+const float maxV = 0.01;
+const float maxAccel = 0.01;
+...</code>
+            <p>
+                As well as the laws of physics, for example, the gravitational
+                attraction between particles:
+            </p>
+            <code>// Attraction of particles towards each other
+if (particleGravity != 0.0) {
+    vec4 particle_pos;
+    vec4 center_of_mass;
+    center_of_mass = vec4(0.0, 0.0, 0.0, 0.0);
+    for (int i = 0; i &lt; particleLimit; i++) {
+        particle_pos = allStates[i];
+        center_of_mass += particle_pos;
+    }
+    center_of_mass /= float(particleLimit);
+    vec2 dist = center_of_mass.xy - state.xy;
+    dist = (attractionRotationMatrix * dist);
+    vec2 accel = dist * particleGravity / weight;
+    if (length(accel) &gt; maxAccel) {
+        accel *= vec2(maxAccel / length(accel));
+    }
+    newV.xy += accel;
+}</code>
+            <p>
+                You can start by tweaking the physical constants first and see
+                what happens, but don't be afraid to alter the laws of physics
+                as well.  Be creative, think outside the box, tinker, and don't
+                be afraid to break things.  You can always roll back.  In this
+                expedition, there is no right and wrong, but if you're brave
+                enough, you can get a glimpse of the inifinite possibilities of
+                exophysics.
+            </p>
+            <p>
+                The vertex shader varies strongly between individual universes.
+                It is therefore recommended to comment it extensively.  There
+                are stories aplenty of adventurers entering a universe, getting
+                entirely lost in a labyrinth of code, and never finding a way
+                back home.
+            </p>
+            <h3>Fragment Shader</h3>
+            <p>
+                The fragment shader is, like the vertex shader, written in
+                GLSL.  Fragment shaders are used to specify the color of a
+                pixel.  If you draw a triangle, for example, the vertex shader
+                would be run 3 times (once per corner of the triangle), and the
+                fragment shader would be run once for every pixel that the
+                triangle occupies.
+            </p>
+            <p>
+                In the case of vanilla exophysics, the only thing that's drawn
+                is points.  For each point, the vertex shader is run once, and
+                then the fragment shader is run once.  So instead of passing a
+                lot of data between individual shaders, the author decided to
+                simply compute the color in the vertex shader and pass it
+                directly to the fragment shader.
+            </p>
+            <p>
+                The fragment shader is therefore a stub, which only outputs
+                what is passed as the input from the vertex shader.
+            </p>
+            <p>
+                See more info on fragment shaders in the <a href="https://webgl2fundamentals.org/webgl/lessons/webgl-shaders-and-glsl.html#fragment-shader">WebGL2 Fundamentals Tutorial Page</a>.
+            </p>
+            <h3>JavaScript</h3>
+            <p>
+                The JavaScript code contains functions for:
+            </p>
+            <ul>
+                <li>initializing the WebGL2 state</li>
+                <li>managing user interaction by registering event handlers for e.g. mouse clicks</li>
+                <li>compiling and linking the vertex &amp; fragment shader</li>
+                <li>managing the buffers for sending and receiving variables from/to the vertex shader</li>
+                <li>triggering the drawing of the WebGL image into the <code>&lt;canvas&gt;</code></li>
+            </ul>
+            <p>
+                Unless you want to 
+            </p>
+            <h2>Particle Limit</h2>
+            <p>
+                The particle limit is defined in the "<code>parameters</code>"
+                object, as well as in the "<code>particleLimit</code>" constant
+                of the vertex shader.  As described in code comments, the
+                number needs to be identical in both places, otherwise the
+                universe will malfunction. The author did not find a way to
+                have a single place for this parameter due to technical
+                limitations.
+            </p>
+            <p>
+                In order for a particle to interact with all other particles,
+                the state of each particle is passed to the vertex shader
+                through a
+                <a href="https://webgl2fundamentals.org/webgl/lessons/webgl-shaders-and-glsl.html#uniforms">"uniform"</a>
+                variable, typically called "<code>allStates</code>".
+                Unfortunately, the size of uniform variables is restricted (see
+                <code>MAX_VERTEX_UNIFORM_VECTORS</code>).  The limit depends on
+                the device, with a minimum of 256 uniforms.
+            </p>
+            <p>
+                As a result, there will be some devices which have a maximum
+                number of particles of 256, and others with 2048 or higher.
+                Exophysics will automatically reduce the number of particles to
+                match the device specifications. But since the universe works a
+                little differently depending on the number of particles, it's
+                generally a good idea to set a hard particle limit of 256, so
+                the universe's properties will unfold identically on each
+                device.  Of course, if you want more, go for it.
+            </p>
+        </article>
+        <script src="toc.js"></script>
+    </body>
+</html>
