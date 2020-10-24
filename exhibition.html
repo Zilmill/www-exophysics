@@ -1,74 +1,20 @@
 <!DOCTYPE html>
 <html>
     <head>
-        <title>Exophysics</title>
+        <title>Exophysics Exhibition</title>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="og:title" property="og:title" content="Exophysics">
         <meta name="description" content='Explore the physics of other universes'>
         <link rel="shortcut icon" type="image/gif" href="data:image/gif;base64,R0lGODdhBAAEAOMBAFQAzFUAzFgBzV0DzmQG0G4K1IES2osW3ZUZ358e47El6L0q7MUt7dAx8uM59/VA/CwAAAAABAAEAAAEDJAIEJApg6l0nmtLBAA7">
-        <style type="text/css">
-            html {
-                background: radial-gradient(circle at top, #f36, #000 75%);
-                background-attachment: fixed;
-                color: #fdd;
-                font-family: "Palatino Linotype", "Book Antiqua", Palatino, serif;
-                font-size: 14pt;
-                margin: 0;
-            }
-            body {
-                background: black;
-                max-width: 82ch;
-                padding: 20pt 20pt 60pt 20pt;
-                box-shadow: 0 0 5pt black;
-                margin: 0 auto;
-                min-height: 100vh;
-            }
-            nav {
-                text-align: center;
-                padding: 0 0 20pt 0;
-            }
-            nav a, nav a:visited {
-                border: 1px solid #744;
-                background: #422;
-                padding: 1pt 6pt;
-                border-radius: 3px;
-                color: #fff;
-                text-decoration: none;
-            }
-            nav a:hover {
-                background: #644;
-                color: #fff;
-            }
-			a img {
-			}
-            h1 {
-                text-align: center;
-                text-decoration: underline;
-            }
-            .exhibit {
-                background: #000;
-				border: 1px solid #f36;
-                padding: 3pt;
-                margin: 4pt;
-                min-width: 350px;
-                max-width: 35ch;
-                box-shadow: 0pt 0pt 5pt #f36;
-                flex: 1 100%;
-            }
-            .exhibit h2 { margin: 0; }
-            .exhibit p, ul { margin: 0; }
-            .exhibit ul { padding-left: 1em; }
-            a, a:hover, a:visited { color: #99f; }
-            ul { list-style-type: bengali; }
-        </style>
+        <link rel="stylesheet" href="exophysics.css" type="text/css" />
     </head>
     <body>
         <nav>
             <a href="index.html">Home</a>
-            <a href="exhibition.html">Exhibition</a>
-            <a href="exophysics.html">Manual</a>
-            <a href="exochemistry.html">Cookbook</a>
+            <a href="exhibition.html" class="active">Exhibition</a>
+            <a href="manual.html">Manual</a>
+            <a href="cookbook.html">Cookbook</a>
             <a href="https://github.com/exophysics/exophysics">Code</a>
             <a href="about.html">About</a>
         </nav>
@@ -81,58 +27,71 @@
                 please submit the HTML file via an email to
                 <u>museum&#3793;exophysics.net</u>.
             </p>
-            <p>
-                Please include the following in your email:
-            </p>
-            <ol>
-                <li>A name of your choice</li>
+            <div class="note">
+                <b>Please include the following in your email:</b>
+                <ol>
+                    <li>A name of your choice for your universe</li>
+                    <ul>
+                        <li>No trademark infringement (google it before)</li>
+                        <li>Must be "safe for work" and inoffensive in all lanuages</li>
+                    </ul>
+                    <li>The name of the discoverer, with an optional link</li>
+                    <li>One HTML file</li>
+                    <ul>
+                        <li>WITH NO EXTERNAL DEPENDENCIES OF ANY KIND</li>
+                        <li>No copyright infringement</li>
+                        <li>Optionally with a link to GitHub, GitLab, or other code hoster</li>
+                        <li>Your universe MUST NOT permit the existence of conscious entities capable of suffering</li>
+                    </ul>
+                    <li>One PNG or BMP file with a 350x250 pixel screenshot</li>
+                    <li>Your survey report, describing the properties of your universe</li>
+                    <li>The sentence: "As the sole copyright holder, I hereby release the attached data into the public domain, and allow you to publish it on https://exophysics.net"</li>
+                </ol>
+            </div>
+            <ul>
+                <li>Click on any of the images to teleport into the universe</li>
                 <ul>
-                    <li>No trademark infringement (google it before)</li>
-                    <li>Must be "safe for work" and inoffensive in all lanuages</li>
+                    <li>Exophysics uses modern technologies. If it doesn't run for you, try another device or a modern browser like Firefox</li>
                 </ul>
-                <li>The name of the discoverer, with an optional link</li>
-                <li>One HTML file</li>
+                <li>Use mouse clicks and the space bar to interact with particles</li>
+                <li>To view the source code, first click on the image, then use the browser's menu option to view the page source code.  Often the shortcut for this is to press <code>Ctrl+U</code>.</li>
+                <li>Feel free to change any of these universes and creating new ones by right-clicking on the image and clicking "Save link as..."</li>
                 <ul>
-                    <li>WITH NO EXTERNAL DEPENDENCIES OF ANY KIND</li>
-                    <li>No copyright infringement</li>
-                    <li>Optionally with a link to GitHub, GitLab, or other code hoster</li>
-                    <li>Your universe MUST NOT permit the existence of conscious entities capable of suffering</li>
+                    <li>The resulting HTML file can be edited with a text editor</li>
+                    <li>To start your new universe, open it in your browser, for example by double-clicking on the file</li>
                 </ul>
-                <li>One PNG or BMP file with a 350x250 pixel screenshot</li>
-                <li>Your survey report, describing the properties of your universe</li>
-                <li>The sentence: "As the sole copyright holder, I hereby release the attached data into the public domain, and allow you to publish it on https://exophysics.net"</li>
-            </ol>
-            <br />
+            </ul>
+            <h2>Exhibits</h2>
             <div style="display: flex; justify-content: space-between; flex-wrap: wrap;">
                 <div class="exhibit">
-                    <h2>Taenope</h2>
+                    <h3>Taenope</h2>
                     <a href="exhibit/taenope.html"><img src="exhibit/taenope.png"></a>
-                    <ul>
+                    <ol>
                         <li>Code: <a href="">link</a></li>
                         <li>Discovery: 2020-10-18, by <a href="https://github.com/hut">hut</a></li>
                         <li>Properties:</li>
-                        <ul>
+                        <ol>
                             <li>Forces: gravity, electric</li>
                             <li>1 blue + 1 red form stable molecules</li>
                             <li>Forms plasma under pressure</li>
                             <li>Particles have two velocity vectors, one per force (gravity, electric), with their own maximum velocity</li>
-                        </ul>
-                    </ul>
+                        </ol>
+                    </ol>
                 </div>
                 <div class="exhibit">
-                    <h2>Dorilia</h2>
+                    <h3>Dorilia</h2>
                     <a href="exhibit/dorilia.html"><img src="exhibit/dorilia.png"></a>
-                    <ul>
+                    <ol>
                         <li>Code: <a href="">link</a></li>
                         <li>Discovery: 2020-10-18, by <a href="https://github.com/hut">hut</a></li>
                         <li>Properties:</li>
-                        <ul>
+                        <ol>
                             <li>Forces: electric</li>
                             <li>1 blue + 1 red form stable, immobile molecules</li>
                             <li>Two molecules connect and move along perpendicular to the axis of connection</li>
                             <li>Forms plasma under pressure</li>
-                        </ul>
-                    </ul>
+                        </ol>
+                    </ol>
                 </div>
             </div>
         </article>

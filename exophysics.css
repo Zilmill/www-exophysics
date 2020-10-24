@@ -1,0 +1,98 @@
+html {
+    background: radial-gradient(circle at top, #f36, #000 75%);
+    background-attachment: fixed;
+    color: #fdd;
+    font-family: "DejaVu Sans", sans;
+    font-size: 13pt;
+    margin: 0;
+}
+body {
+    background: black;
+    max-width: 75ch;
+    padding: 20pt 20pt 60pt 20pt;
+    box-shadow: 0 0 5pt black;
+    margin: 0 auto;
+    min-height: 100vh;
+}
+code {
+    white-space: pre;
+    color: #4f4;
+    font: monospace;
+}
+article > code {
+    display: block;
+    margin: 10pt 30pt;
+    padding: 6pt 12pt;
+    background: #191919;
+    border: 1px solid #444;
+    overflow-x: auto;
+}
+a[href*="//"]:after {
+    content: "➚";
+    font-size: 65%;
+    vertical-align: super;
+    text-decoration: none;
+    display: inline-block; /* seems to be required for text-decoration: none; to work */
+}
+a, a:hover, a:visited { color: #99f; }
+ol { list-style-type: thai; }
+/*ul { list-style-type: bengali; }*/
+h1 {
+    text-align: center;
+    text-decoration: underline;
+}
+.homepage-screenshots {
+    display: flex;
+    justify-content: space-around;
+    flex-wrap: wrap;
+    padding-bottom: 20pt;
+}
+.homepage-screenshots a img {
+    box-shadow: 0pt 0pt 5pt #99f;
+    border: 1px solid #99f;
+    /*border: 1px solid #f36;*/
+}
+.note {
+    background: #191919;
+    margin: 10pt 30pt;
+    padding: 6pt 12pt;
+    border: 1px solid #444;
+    font-size: 85%;
+}
+
+/* Navigation bar */
+nav {
+    text-align: center;
+    padding: 0 0 20pt 0;
+    line-height: 1.5;
+}
+nav a, nav a:visited {
+    border: 1px solid #744;
+    background: #422;
+    padding: 1pt 6pt;
+    border-radius: 3px;
+    color: #fff;
+    text-decoration: none;
+}
+nav a:hover {
+    background: #644;
+    color: #fff;
+}
+nav a.active { text-decoration: underline; }
+
+/* Exhibit Styling */
+.exhibit {
+    background: #000;
+    border: 1px solid #f36;
+    padding: 3pt;
+    margin: 4pt;
+    min-width: 350px;
+    max-width: 35ch;
+    box-shadow: 0pt 0pt 5pt #f36;
+    flex: 1 100%;
+}
+.exhibit h3 {
+    margin: 0 0 0 12pt;
+}
+.exhibit p, ol { margin: 0; }
+.exhibit ol { padding-left: 1em; }
