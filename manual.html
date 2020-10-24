@@ -217,8 +217,8 @@ if (particleGravity != 0.0) {
             </p>
             <h4>Adding variables</h4>
             <p>
-                These would be the steps to pass extra variables to the vertex
-                shader, if you ever need to:
+                These would be the steps to pass an extra variable from the
+                JavaScript code to the vertex shader, if you ever need to:
             </p>
             <ol>
                 <li>Add an "<code>in</code>" variable to the vertex shader, like "<code>in float coolNumber;</code>"</li>
@@ -236,7 +236,7 @@ if (particleGravity != 0.0) {
                     <li><code>gl.bindBuffer(...);</code></li>
                     <li><code>gl.bufferData(...);</code></li>
                 </ol>
-                <li>Now you just need to use the variable.  Error messages may appear if the variable is unused, due to aggressive optimization.</li>
+                <li>Now you just need to use the variable in the vertex shader.  Error messages may appear if the variable is unused, due to aggressive optimization.</li>
             </ol>
             <h4>Adding uniforms</h4>
             <p>
