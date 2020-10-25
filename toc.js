@@ -11,9 +11,9 @@ window.onload = function () {
             }
 
             if (openLevel > level) {
-                toc += (new Array(openLevel - level + 1)).join("<ul>");
+                toc += (new Array(openLevel - level + 1)).join("<ol>");
             } else if (openLevel < level) {
-                toc += (new Array(level - openLevel + 1)).join("</ul>");
+                toc += (new Array(level - openLevel + 1)).join("</ol>");
             }
 
             level = parseInt(openLevel);
@@ -26,7 +26,7 @@ window.onload = function () {
     );
 
     if (level) {
-        toc += (new Array(level + 1)).join("</ul>");
+        toc += (new Array(level + 1)).join("</ol>");
     }
 
     document.getElementById("toc").innerHTML += toc;
