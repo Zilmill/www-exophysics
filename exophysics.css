@@ -58,10 +58,17 @@ h1 {
 }
 .note {
     background: #191919;
-    margin: 10pt 30pt;
-    padding: 6pt 12pt;
+    padding: 4pt 4pt;
     border: 1px solid #444;
     font-size: 85%;
+}
+.note ol, .note ul { padding-left: 1.3em; }
+@media (min-width: 600px) {
+    .note {
+        margin: 10pt 30pt;
+        padding: 6pt 12pt;
+    }
+    .note ol, .note ul { padding-left: 2em; }
 }
 
 /* Navigation bar */
@@ -90,13 +97,15 @@ nav a.active { text-decoration: underline; }
     border: 1px solid #f36;
     padding: 3pt;
     margin: 4pt;
-    min-width: 350px;
-    max-width: 35ch;
+    max-width: 100%;
     box-shadow: 0pt 0pt 5pt #f36;
     flex: 1 100%;
+}
+.exhibit img {
+    max-width: 100%;
 }
 .exhibit h3 {
     margin: 0 0 0 12pt;
 }
 .exhibit p, ol { margin: 0; }
-.exhibit ol { padding-left: 1em; }
+.exhibit ol { padding-left: 1.2em; }
