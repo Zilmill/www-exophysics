@@ -98,7 +98,7 @@ nav a.active { text-decoration: underline; }
     border: 1px solid #f36;
     padding: 3pt;
     margin: 4pt;
-    max-width: 100%;
+    max-width: 35ch;
     box-shadow: 0pt 0pt 5pt #f36;
     flex: 1 100%;
 }
