@@ -51,7 +51,10 @@ h1 {
 .homepage-screenshots a img {
     box-shadow: 0pt 0pt 5pt #99f;
     border: 1px solid #99f;
+    margin: 2pt;
+    max-width: 100%;
     /*border: 1px solid #f36;*/
+
 }
 .note {
     background: #191919;
