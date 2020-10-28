@@ -8,11 +8,13 @@ html {
 }
 body {
     background: black;
-    max-width: 75ch;
-    padding: 20pt 20pt 60pt 20pt;
+    max-width: 80ch;
     box-shadow: 0 0 5pt black;
     margin: 0 auto;
     min-height: 100vh;
+}
+article {
+    padding: 0pt 20pt 60pt 20pt;
 }
 code {
     white-space: pre;
@@ -47,6 +49,7 @@ h1 {
     display: flex;
     justify-content: space-around;
     flex-wrap: wrap;
+    padding-top: 10pt;
     padding-bottom: 20pt;
 }
 .homepage-screenshots a img, a.exhibitlink img {
@@ -75,16 +78,20 @@ h1 {
 /* Navigation bar */
 nav {
     text-align: center;
-    padding: 0 0 20pt 0;
+    justify-content: space-around;
+    flex-wrap: wrap;
+    margin: 0 0 50pt 0;
+    padding: 0;
     line-height: 1.5;
+    display: flex;
 }
 nav a, nav a:visited {
-    border: 1px solid #744;
-    background: #422;
     padding: 1pt 6pt;
-    border-radius: 3px;
     color: #fff;
     text-decoration: none;
+    flex-grow: 1;
+    border-right: 1px solid #534;
+    border-bottom: 1px solid #534;
 }
 nav a:hover {
     background: #644;
