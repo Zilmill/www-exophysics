@@ -72,6 +72,9 @@ h1 {
     right: 0;
     margin: 5pt;
 }
+sup {
+    color: #555;
+}
 .note {
     background: #191919;
     padding: 4pt 4pt;
