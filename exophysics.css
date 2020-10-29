@@ -60,6 +60,18 @@ h1 {
     /*border: 1px solid #f36;*/
 
 }
+.warning-wrapper {
+    position: relative;
+}
+.warning-wrapper:after {
+    content: "Epilepsy Warning";
+    display: inline-block;
+    position: absolute;
+    color: red;
+    bottom: 0;
+    right: 0;
+    margin: 5pt;
+}
 .note {
     background: #191919;
     padding: 4pt 4pt;
