@@ -53,12 +53,9 @@ h1 {
     padding-bottom: 20pt;
 }
 .homepage-screenshots a img, a.exhibitlink img {
-    box-shadow: 0pt 0pt 5pt #99f;
-    border: 1px solid #99f;
+    border: 3pt double #444;
     margin: 2pt;
     max-width: 100%;
-    /*border: 1px solid #f36;*/
-
 }
 .warning-wrapper {
     position: relative;
@@ -78,8 +75,9 @@ sup {
 .note {
     background: #191919;
     padding: 4pt 4pt;
-    border: 1px solid #444;
+    border: 4px double #444;
     font-size: 85%;
+    font-style: italic;
 }
 .note ol, .note ul { padding-left: 1.3em; }
 @media (min-width: 600px) {
