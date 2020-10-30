@@ -65,8 +65,8 @@ h1 {
     display: inline-block;
     position: absolute;
     color: red;
-    bottom: 0;
-    right: 0;
+    bottom: 2pt;
+    right: 5pt;
     margin: 5pt;
 }
 sup {
