@@ -115,11 +115,10 @@ nav a.active { text-decoration: underline; }
 /* Exhibit Styling */
 .exhibit {
     background: #000;
-    border: 1px solid #f36;
+    border: 3pt double #444;
     padding: 3pt;
-    margin: 4pt;
+    margin: 3pt;
     max-width: 35ch;
-    box-shadow: 0pt 0pt 5pt #f36;
     flex: 1 100%;
 }
 .exhibit img {
