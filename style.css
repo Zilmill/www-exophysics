@@ -131,8 +131,7 @@ nav a.active { text-decoration: underline; }
     box-shadow: 0 0 5pt #f36;
     border: 1px solid #f36;
     padding: 3pt;
-    margin: 3pt;
-    max-width: 35ch;
+    margin: 5pt;
     flex: 1 100%;
 }
 @media (min-width: 600px) {
