@@ -15,14 +15,13 @@ body {
     min-height: 100vh;
 }
 #e, #x, #o {
-    font-size: 160%;
+    font-size: 120%;
     font-weight: bold;
     font-style: italic;
-    letter-spacing: -2pt;
 }
-#e { color: #fc0; }
-#x { color: #0ff; }
-#o { color: #f0f; letter-spacing: 0; }
+#e { color: #fc0; text-shadow: 0.2ch 0 0 #db0; }
+#x { color: #0ff; text-shadow: 0.2ch 0 0 #0dd; }
+#o { color: #f0f; text-shadow: 0.2ch 0 0 #d0d; }
 article { padding: 20pt; }
 code {
     color: #4f4;
