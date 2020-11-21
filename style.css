@@ -54,8 +54,7 @@ h1 {
     display: flex;
     justify-content: space-around;
     flex-wrap: wrap;
-    padding-top: 10pt;
-    padding-bottom: 20pt;
+    padding: 10pt 0;
 }
 .homepage-screenshots a img, a.exhibitlink img {
     box-shadow: 0 0 5pt #f36;
