@@ -136,6 +136,11 @@ nav a.active { text-decoration: underline; }
     max-width: 35ch;
     flex: 1 100%;
 }
+@media (min-width: 600px) {
+    .exhibit {
+        flex: 1 0 44%;
+    }
+}
 .exhibit img {
     max-width: 100%;
 }
