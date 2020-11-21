@@ -36,15 +36,11 @@ pre > code {
     overflow-x: auto;
 }
 a[href*="//"]:after {
-    width: 0.35em;
-    height: 0.35em;
-    margin: 0.3em 0 0 0.2ch;
-    content: "";
-    box-shadow: 2px -2px 0 #99f;
-    background: linear-gradient(to bottom right, black 0%, black 40%, #99f 40%,
-                                                 #99f 60%, black 60%, black 100%);
-    vertical-align: top;
-    display: inline-block;
+    content: "➚";
+    font-size: 65%;
+    vertical-align: super;
+    text-decoration: none;
+    display: inline-block; /* seems to be required for text-decoration: none; to work */
 }
 a, a:hover { color: #99f; }
 a:visited { color: #c5c; }
