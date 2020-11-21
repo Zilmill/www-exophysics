@@ -59,7 +59,8 @@ h1 {
     padding-bottom: 20pt;
 }
 .homepage-screenshots a img, a.exhibitlink img {
-    border: 3pt double #444;
+    box-shadow: 0 0 5pt #f36;
+    border: 1px solid #f36;
     margin: 2pt;
     max-width: 100%;
 }
@@ -120,7 +121,8 @@ nav a.active { text-decoration: underline; }
 /* Exhibit Styling */
 .exhibit {
     background: #000;
-    border: 3pt double #444;
+    box-shadow: 0 0 5pt #f36;
+    border: 1px solid #f36;
     padding: 3pt;
     margin: 3pt;
     max-width: 35ch;
