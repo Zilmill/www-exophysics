@@ -1,3 +1,8 @@
+/*
+ * Generates a table of contents.
+ * This is a modified version of https://stackoverflow.com/a/187946 by Ates Goral.
+ */
+
 window.onload = function () {
     var toc = "";
     var level = 1;
