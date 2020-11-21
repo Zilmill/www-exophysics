@@ -3,7 +3,7 @@ html {
     background: url(stereoscopic_nebula.png);
     background-attachment: fixed;
     color: #fdd;
-    font-family: "DejaVu Sans", sans;
+    font-family: "DejaVu Sans", sans-serif;
     font-size: 13pt;
     margin: 0;
 }
