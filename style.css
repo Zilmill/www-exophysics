@@ -14,6 +14,15 @@ body {
     margin: 0 auto;
     min-height: 100vh;
 }
+#e, #x, #o {
+    font-size: 160%;
+    font-weight: bold;
+    font-style: italic;
+    letter-spacing: -2pt;
+}
+#e { color: #fc0; }
+#x { color: #0ff; }
+#o { color: #f0f; letter-spacing: 0; }
 article { padding: 20pt; }
 code {
     color: #4f4;
