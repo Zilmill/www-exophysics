@@ -1,6 +1,5 @@
 html {
-    background-color: black;
-    background: url(stereoscopic_nebula.png);
+    background: url(stereoscopic_nebula.png), black;
     background-attachment: fixed;
     color: #fdd;
     font-family: "DejaVu Sans", sans-serif;
