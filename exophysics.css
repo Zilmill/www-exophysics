@@ -14,9 +14,7 @@ body {
     margin: 0 auto;
     min-height: 100vh;
 }
-article {
-    padding: 0pt 20pt 20pt 20pt;
-}
+article { padding: 20pt; }
 code {
     white-space: pre;
     color: #4f4;
@@ -95,7 +93,7 @@ nav {
     justify-content: space-around;
     flex-wrap: wrap;
     margin: 0;
-    padding: 0 0 20pt 0;
+    padding: 0;
     line-height: 1.5;
     display: flex;
 }
