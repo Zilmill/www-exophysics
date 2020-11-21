@@ -156,7 +156,7 @@
                 the emergence of exochemical properties.  This is the
                 (simplified) relevant code:
             </p>
-            <code>int myCharge = (state.w &lt; 0.5) ? 1 : -1;
+            <pre><code>int myCharge = (state.w &lt; 0.5) ? 1 : -1;
 for (int i = 0; i &lt; particleLimit; i++) {
     if (i == currentIndex) { continue; }  // don't interact with yourself
     otherState = allStates[i];
@@ -165,7 +165,7 @@ for (int i = 0; i &lt; particleLimit; i++) {
     direction = float(myCharge * otherCharge);
     acceleration = -0.0001 * distance.xy / pow(length(distance.xy), 4.0);
     velocity.xy += acceleration * direction;
-}</code>
+}</code></pre>
             <p>
                 This is just one of many ways to write a non-discriminatory
                 force, but the key part is that there's a direction which

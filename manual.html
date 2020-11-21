@@ -141,20 +141,20 @@
                 One interesting part of the vertex shader is the definitions of
                 the physical constants.  This might look like:
             </p>
-            <code>const float floorGravity = 0.0;
+            <pre><code>const float floorGravity = 0.0;
 const float particleGravity = 0.0;
 const float flavorAttraction = -0.05;
 const float numFlavors = 3.0;
 const float bounceDampeningFactor = 0.99;
 const float maxV = 0.01;
 const float maxAccel = 0.01;
-...</code>
+...</code></pre>
             <h4>Changing physical laws</h4>
             <p>
                 The vertex shader also defines the laws of physics, for
                 example, the gravitational attraction between particles:
             </p>
-            <code>// Attraction of particles towards each other
+            <pre><code>// Attraction of particles towards each other
 if (particleGravity != 0.0) {
     vec4 particle_pos;
     vec4 center_of_mass;
@@ -171,7 +171,7 @@ if (particleGravity != 0.0) {
         accel *= vec2(maxAccel / length(accel));
     }
     newV.xy += accel;
-}</code>
+}</code></pre>
             <p>
                 You can start by tweaking the physical constants first and see
                 what happens, but don't be afraid to alter the laws of physics
