@@ -57,10 +57,14 @@ h1 {
     padding: 10pt 0;
 }
 .homepage-screenshots a img, a.exhibitlink img {
-    box-shadow: 0 0 5pt #f36;
-    border: 1px solid #f36;
     margin: 2pt;
     max-width: 100%;
+}
+.homepage-screenshots a img, a.exhibitlink img, .exhibit {
+    /* neon glow */
+    box-shadow: 0 0 5pt #c5f;
+    border: 1px solid #c5f;
+    background: #000;
 }
 .warning-wrapper {
     position: relative;
@@ -127,9 +131,6 @@ nav a.active { text-decoration: underline; }
     flex-wrap: wrap;
 }
 .exhibit {
-    background: #000;
-    box-shadow: 0 0 5pt #f36;
-    border: 1px solid #f36;
     padding: 3pt;
     margin: 5pt;
     flex: 1 100%;
