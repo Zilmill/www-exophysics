@@ -11,35 +11,41 @@
     frontiers.  It takes courage to leave the comfort of the physics of your
     home universe and explore the uncharted worlds of exophysics.
 
-    Along with this letter, you will find a complimentary explorer hat, an
-    exochemistry field manual, and a so-called "HTML file", a human-era magic
-    spell that will serve as your entrance portal.
+    Along with this letter, you will find:
 
-    This file is self-contained, will run as-is on any modern 2020's web
-    browser, and contains the following parts:
+    - One complimentary explorer hat: 👒 (limited edition)
+    - One Exophysics Field Manual: https://exophysics.net/manual.html
+    - One Exochemistry Cookbook: https://exophysics.net/cookbook.html
 
-    1. The HTML scaffolding
+    And this so-called "HTML file", which is a human-era magic spell that will
+    serve as your entrance portal.  The file is self-contained, will run as-is
+    on any modern 2020's web browser with WebGL2 support, and contains 4 parts:
+
+    1. The HTML backbone
     2. The "parameters" object, for tweaking basic settings
-    3. The vertex shader code that describes the laws of physics
-    4. The fragment shader code that specifies the color of each particle
-    5. The JavaScript code that takes care of the uninteresting WebGL plumbing
+    3. The WebGL2 vertex shader code that describes the laws of physics
+    4. The JavaScript code that takes care of the uninteresting plumbing
 
-    My personal advice is to start by tweaking the vertex shader, and get an
-    intuition for what it takes to maximize the beautiful emergent properties.
-
-    A few pointers:
+    A good place to start is the vertex shader, where you can tweak physical
+    constants and laws, and get an intuition for what it takes to maximize the
+    beautiful emergent properties of a universe.  Additional pointers:
 
     - Website: https://exophysics.net/
     - Code: https://github.com/exophysics/exophysics
     - WebGL2 Tutorial: https://webgl2fundamentals.org/
-    - License: http://www.wtfpl.net/
+    - License: Public Domain
+
+    Divine intervention is possible through:
+
+    - Mouse click: Pull particles towards the mouse pointer
+    - Press ".": Step through the simulation, one frame at a time
+    - Space bar: Pause or resume simulation
 
     Finally, I am legally obliged to inform you of the one law of exophysics:
-    YOU ARE REQUIRED TO SHUT DOWN A SIMULATION IMMEDIATELY IF YOU FIND EVIDENCE
-    OF THE EMERGENCE OF SENTIENT CREATURES CAPABLE OF SUFFERING.
+    YOU ARE REQUIRED TO TERMINATE A SIMULATION IMMEDIATELY UPON FINDING
+    EVIDENCE OF THE EMERGENCE OF SENTIENT CREATURES CAPABLE OF SUFFERING.
 
-    Your guide,
-    Q.
+    With that, 旅行愉快, buen viaje, счастливого пути, et un bon voyage!
     -->
     <body style="margin: 0; background: black;">
         <canvas id="canvas" style="display: block; height: 100vh; width: 100vw;"></canvas>
@@ -53,13 +59,12 @@
         <script type="x-shader/x-vertex" id="vertex-shader">
             #version 300 es
             precision lowp float;
-            // constants
-            const int extraUniforms = 1;
-            const int particleLimit = min(gl_MaxVertexUniformVectors - extraUniforms, 1024);
+            // Don't change the following line. The JavaScript code below will fill in this value
+            const int particleLimit = 0;
 
             // tweakable parameters
             const float floorGravity = 0.0;
-            const float particleGravity = 0.0;
+            const float particleGravity = 0.00000000;
             const float flavorAttraction = -0.0000035;
             const float numFlavors = 5.0;
             const float bounceDampeningFactor = 0.99;
@@ -124,17 +129,15 @@
 
                 // Attraction of particles towards each other
                 if (particleGravity != 0.0) {
-                    vec4 particle_pos;
-                    vec4 center_of_mass;
-                    center_of_mass = vec4(0.0, 0.0, 0.0, 0.0);
+                    vec4 otherState;
+                    vec2 dist;
                     for (int i = 0; i < particleLimit; i++) {
-                        particle_pos = allStates[i];
-                        center_of_mass += particle_pos;
+                        otherState = allStates[i];
+                        dist = otherState.xy - state.xy;
+                        if (length(dist) > 0.000001) {
+                            newV.xy += dist / pow(length(dist), 4.0) * particleGravity;
+                        }
                     }
-                    center_of_mass /= float(particleLimit);
-                    vec4 dist = allStates[currentIndex] - center_of_mass;
-                    newV.x -= dist.x * particleGravity;
-                    newV.y -= dist.y * particleGravity;
                 }
 
                 if (flavorAttraction != 0.0) {
@@ -151,17 +154,6 @@
                             / pow(length(dist.xy), 2.5)
                             * flavorAttraction
                             * (flavor == otherFlavor ? repulsion : -1.0);
-
-                        //if (length(dist.xy) < 0.2) {
-                            //newV.xy += dist.xy
-                            //    * flavorAttraction
-                            //    / min(0.5, pow(length(dist.xy), 3.0))
-                            //    //* (0.3 - max(0.0, min(0.3, length(dist.xy))))
-                            //    * (abs(state.w - otherState.w) < 0.04 ? -1.0 : (numFlavors - 1.0));
-                            //if (length(dist.xy) < 0.01) {
-                                //state.w = (9.0 * state.w + otherState.w) / 10.0;
-                            //}
-                        //}
                     }
                 }
 
@@ -243,7 +235,7 @@
                 param.paused = false;
 
                 initUI(gl, param);
-                const shaderInfo = initShaders(gl);
+                const shaderInfo = initShaders(gl, param.particleLimit);
                 const buffers = initBuffers(gl, shaderInfo, param);
                 drawScene(gl, shaderInfo, buffers, param);
             }
@@ -273,14 +265,18 @@
                     }
                 });
                 window.addEventListener('keypress', function(e) {
-                    if (e.key === " ") {
+                    if (e.key === " ")
                         param.paused ^= true;
+                    else if (e.key === ".") {
+                        param.paused = false;
+                        param.pauseOnNextFrame = true;
                     }
                 });
             }
 
-            function initShaders(gl) {
+            function initShaders(gl, particleLimit) {
                 const vertexSource = document.getElementById("vertex-shader").text
+                    .replace(/(particleLimit = )\d+;/, '$1' + particleLimit + ';');
                 const fragmentSource = document.getElementById("fragment-shader").text
                 const feedbackVars = ['state', 'newV'];
                 const shaderProgram = createProgram(gl, vertexSource, fragmentSource, feedbackVars);
@@ -401,6 +397,11 @@
                 var paused = (param.paused ? 1.0 : 0.0);
                 gl.uniform4fv(shaderInfo.uniforms.userInput, new Float32Array(
                     [param.pointerX, param.pointerY, button_pressed, paused]));
+
+                if (param.pauseOnNextFrame) {
+                    param.pauseOnNextFrame = false;
+                    param.paused = true;
+                }
 
                 // Set the random variable
                 var random = [...Array(param.particleLimit)].map(_=>(Math.random()));
